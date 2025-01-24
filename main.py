@@ -1,6 +1,8 @@
 import time
 import title_text as _text
+import random_events as _event
 import os
+import random
 
 opening_file = 'opening.txt'
 text_speed = 0.02
@@ -20,11 +22,17 @@ def play():
     display_menu('game_menu')
 
 
+def random_event():
+    _event.events[random.choice(list(_event.events.keys()))]()
+    input("PRESS ENTER TO CONTINUE")
+
+
 def end_day():
     global day
     _print("You head to bed.")
     time.sleep(0.5)
     day += 1
+    random_event()
 
 
 menus = {
@@ -32,7 +40,6 @@ menus = {
         "play": play,
         #"how to play": tutorial,
         #"credits": credits_menu,
-        #"quit": _quit
     },
     "game_menu": {
         "end day": end_day,
