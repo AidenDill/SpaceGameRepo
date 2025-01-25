@@ -1,6 +1,7 @@
 import time
 import title_text as _text
-import random_events as _event
+import events as _event
+import advanced_random as adv_random
 import os
 import random
 
@@ -8,6 +9,18 @@ opening_file = 'opening.txt'
 text_speed = 0.02
 day = 1
 skip_intro = True
+
+virus_spread_chance = 10
+virus_recover_chance = 25
+virus_death_chance = 5
+
+
+def roll_chance(chance):
+    roll = random.randint(0, 100)
+    if roll <= chance:
+        return True
+    else:
+        return False
 
 
 def clear_console():
@@ -27,12 +40,31 @@ def random_event():
     input("PRESS ENTER TO CONTINUE")
 
 
+def do_ailments():
+    ''' Calculates consequences for all crew ailments.'''
+    for crewmate in _event.crew:
+        if crewmate.infected:
+            print(f"{crewmate.name.title()} is infected.")
+        if crewmate.injured:
+            print(f"{crewmate.name.title()} is injured.")
+
+
 def end_day():
     global day
     _print("You head to bed.")
     time.sleep(0.5)
     day += 1
     random_event()
+    do_ailments()
+
+
+def view_crew():
+    for crewmate in _event.crew:
+        print(f" - {crewmate}")
+
+
+def kill_crew():
+    _event.crew.clear()
 
 
 menus = {
@@ -43,6 +75,8 @@ menus = {
     },
     "game_menu": {
         "end day": end_day,
+        "assess crew": view_crew,
+        "kill": kill_crew
     },
 }
 
@@ -51,11 +85,10 @@ def display_menu(current_menu):
         it executes the corresponding function. current_menu is the menu
         it will open from the menu dictionary.'''
     while True:
-        clear_console()
         if current_menu == 'main_menu':
             _print(_text.game_title, delay=0.08, print_by_line=True)
         else:
-            print(f"It is day {day}.\n")
+            print(f"\nIt is day {day}.\n")
         num = 1
         for option in menus[current_menu]:
             print(f"{num}. {option.title()}")
@@ -71,6 +104,8 @@ def display_menu(current_menu):
             menus[current_menu][choice]()
         elif choice == 'quit' or choice == str(num):
             return
+        else:
+            clear_console()
 
 
 def _print(text: str, delay=text_speed, newline=True, print_by_line=False):
