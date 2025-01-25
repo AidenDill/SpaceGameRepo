@@ -16,7 +16,7 @@ def roll_outcome(possibilities):
             chance_floor += chance
     return None
 
-def roll_outcome(chance):
+def roll_chance(chance):
     roll = random.randint(0, 100)
     if roll <= chance:
         return True

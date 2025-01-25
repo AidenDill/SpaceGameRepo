@@ -4,6 +4,7 @@ class Character:
         self.role = role
         self.infected = False
         self.injured = False
+        self.dying = False
 
     def __str__(self):
         return f"{self.name.title()}: {self.role.title()}"

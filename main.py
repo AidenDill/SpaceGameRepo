@@ -10,17 +10,14 @@ text_speed = 0.02
 day = 1
 skip_intro = True
 
-virus_spread_chance = 10
+virus_spread_chance = 20
 virus_recover_chance = 25
 virus_death_chance = 5
 
+injury_recover_chance = 40
 
-def roll_chance(chance):
-    roll = random.randint(0, 100)
-    if roll <= chance:
-        return True
-    else:
-        return False
+mortal_wound_recover_chance = 10
+mortal_wound_death_chance = 40
 
 
 def clear_console():
@@ -38,15 +35,57 @@ def play():
 def random_event():
     _event.events[random.choice(list(_event.events.keys()))]()
     input("PRESS ENTER TO CONTINUE")
+    clear_console()
 
 
 def do_ailments():
     ''' Calculates consequences for all crew ailments.'''
     for crewmate in _event.crew:
         if crewmate.infected:
-            print(f"{crewmate.name.title()} is infected.")
+            roll = adv_random.roll_outcome({"spread": virus_spread_chance,
+                                            "recover": virus_recover_chance,
+                                            "die": virus_death_chance})
+            if roll == "spread":              
+                _event.virus()
+                print(f"{crewmate.name.title()} is infected.")
+            elif roll == "recover":
+                crewmate.infected = False
+                print(f"{crewmate.name.title()} has recovered from their illness.")
+            elif roll == "die":
+                _event.crew.remove(crewmate)
+                print(f"{crewmate.name.title()} has succumbed to their illness.")
+            else:
+                print(f"{crewmate.name.title()} is infected.")
         if crewmate.injured:
-            print(f"{crewmate.name.title()} is injured.")
+            roll = adv_random.roll_outcome({"recover": injury_recover_chance,})
+            if roll == "recover":
+                crewmate.injured = False
+                print(f"{crewmate.name.title()} has recovered from their injury.")
+            else:
+                print(f"{crewmate.name.title()} is injured.")
+        if crewmate.dying:
+            roll = adv_random.roll_outcome({"recover": mortal_wound_recover_chance,
+                                            "die": mortal_wound_death_chance})
+            if roll == "recover":
+                crewmate.dying = False
+                print(f"{crewmate.name.title()} has miraculously recovered from their mortal wounds.")
+            elif roll == "die":
+                _event.crew.remove(crewmate)
+                print(f"{crewmate.name.title()} has succumbed to their injuries.")
+            else:
+                print(f"{crewmate.name.title()} is mortally wounded.")
+
+
+def game_over():
+    print("You died!")
+    exit()
+
+
+def check_game_over():
+    if len(_event.crew) > 0:
+        return
+    else:
+        game_over()
 
 
 def end_day():
@@ -54,8 +93,8 @@ def end_day():
     _print("You head to bed.")
     time.sleep(0.5)
     day += 1
-    random_event()
     do_ailments()
+    random_event() 
 
 
 def view_crew():
@@ -88,7 +127,7 @@ def display_menu(current_menu):
         if current_menu == 'main_menu':
             _print(_text.game_title, delay=0.08, print_by_line=True)
         else:
-            print(f"\nIt is day {day}.\n")
+            print(f"It is day {day}.\n")
         num = 1
         for option in menus[current_menu]:
             print(f"{num}. {option.title()}")
