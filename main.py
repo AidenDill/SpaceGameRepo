@@ -21,7 +21,7 @@ injury_recover_chance = 40
 mortal_wound_recover_chance = 10
 mortal_wound_death_chance = 40
 
-
+# Functions -------------------------------------------------------------------
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
