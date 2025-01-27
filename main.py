@@ -10,6 +10,8 @@ text_speed = 0.02
 day = 1
 skip_intro = True
 
+random_event_chance = 10
+
 virus_spread_chance = 20
 virus_recover_chance = 25
 virus_death_chance = 5
